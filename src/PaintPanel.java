@@ -11,24 +11,27 @@ public class PaintPanel extends JPanel {
     public static Color fillColor;
     public static boolean fill;
 
-    private BufferedImage canvas;
-    private Graphics2D g2;
+    private final BufferedImage canvas;
+    private BufferedImage oldCanvas;
+    private final Graphics2D g2;
 
     private int x1;
     private int y1;
     private int x2;
     private int y2;
+    private int cX;
+    private int cY;
     private boolean mouseHeld;
 
 
     public PaintPanel() {
-        setPreferredSize(new Dimension(1200, 1000));
+        setPreferredSize(new Dimension(1200, 900));
 
-        canvas = new BufferedImage(1200, 1000, BufferedImage.TYPE_INT_RGB);
+        canvas = new BufferedImage(1200, 900, BufferedImage.TYPE_INT_RGB);
         g2 = canvas.createGraphics();
 
         g2.setColor(Color.WHITE);
-        g2.fillRect(0, 0, 1200, 1000);
+        g2.fillRect(0, 0, 1200, 900);
 
         MouseAdapter mouseHandler = new MouseAdapter() {
             @Override
@@ -36,6 +39,13 @@ public class PaintPanel extends JPanel {
                 x1 = e.getX();
                 y1 = e.getY();
                 mouseHeld = true;
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                cX = e.getX();
+                cY = e.getY();
+                repaint();
             }
 
             @Override
@@ -51,6 +61,8 @@ public class PaintPanel extends JPanel {
                     case "rect":
                         drawARect(x1, y1, x2, y2);
                         break;
+                    case "oval":
+                        drawAOval(x1, y1, x2, y2);
                 }
 
                 repaint();
@@ -64,6 +76,7 @@ public class PaintPanel extends JPanel {
         tool = "line";
         lineColor = Color.BLACK;
         fillColor = Color.BLACK;
+        lineStroke = 5;
     }
 
     private void drawALine(int x1, int y1, int x2, int y2) {
@@ -92,6 +105,25 @@ public class PaintPanel extends JPanel {
 
     }
 
+    private void drawAOval(int x1, int y1, int x2, int y2) {
+
+        int x = Math.min(x1, x2);
+        int y = Math.min(y1, y2);
+        int width = Math.abs(x2 - x1);
+        int height = Math.abs(y2 - y1);
+
+        if (fill) {
+            g2.setColor(fillColor);
+            g2.fillOval(x, y, width, height);
+        }
+        else {
+            g2.setStroke(new BasicStroke(lineStroke));
+            g2.setColor(lineColor);
+            g2.drawOval(x, y, width, height);
+        }
+
+    }
+
     public void clearCanvas() {
         g2.setColor(Color.WHITE);
         g2.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -103,7 +135,7 @@ public class PaintPanel extends JPanel {
     }
 
     public void toggleFill() {
-        this.fill = !this.fill;
+        fill = !fill;
     }
 
     @Override
@@ -111,6 +143,45 @@ public class PaintPanel extends JPanel {
         super.paintComponent(g);
 
         g.drawImage(canvas, 0, 0, null);
+
+        if (mouseHeld) {
+            Graphics2D g2d = (Graphics2D) g;
+
+            g2d.setStroke(new BasicStroke(lineStroke));
+
+            int x = Math.min(x1, cX);
+            int y = Math.min(y1, cY);
+            int width = Math.abs(cX - x1);
+            int height = Math.abs(cY - y1);
+
+
+            switch (tool) {
+                case "rect":
+                    if (fill) {
+                        g2d.setColor(fillColor);
+                        g2d.fillRect(x, y, width, height);
+                    }
+                    else {
+                        g2d.setColor(lineColor);
+                        g2d.drawRect(x, y, width, height);
+                    }
+                    break;
+                case "oval":
+                    if (fill) {
+                        g2d.setColor(fillColor);
+                        g2d.fillOval(x, y, width, height);
+                    }
+                    else {
+                        g2d.setColor(lineColor);
+                        g2d.drawOval(x, y, width, height);
+                    }
+                    break;
+                case "line":
+                    g2d.setColor(lineColor);
+                    g2d.drawLine(x1, y1, cX, cY);
+                    break;
+            }
+        }
     }
 
 
