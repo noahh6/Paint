@@ -107,6 +107,7 @@ public class SidePanel extends JPanel {
 
             int y = getHeight() - 773;
 
+
             g2.setColor(Color.WHITE);
             g2.drawRect(224, y, 4, 4);
             g2.setColor(PaintPanel.lineColor);
