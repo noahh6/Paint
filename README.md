@@ -1,35 +1,62 @@
 # Java Swing Paint Application
 
-A lightweight, desktop-based digital canvas application built using Java Swing and AWT. This project provides a clean GUI with essential drawing tools, a dynamic color palette, and adjustable strokes for quick sketching and doodling.
+A lightweight, feature-rich desktop painting application built in Java using **Swing** and **AWT**. This project mimics classic desktop drawing tools with a clean user interface, supporting freehand drawing, geometric shapes, custom brush strokes, color pickers, and PNG exporting.
 
 ---
 
 ## Features
 
-*   **Shape Tools:** Toggle easily between free-hand lines and rectangle drawing modes.
-*   **Dynamic Stroke Control:** Adjust the brush thickness precisely from `0` to `100` pixels using an interactive slider.
-*   **Custom Color Picking:** Choose unique line and fill colors using native `JColorChooser` dialogs.
-*   **Fill Toggle:** Switch between filled shapes or empty outlines with a single click.
-*   **Canvas Clear:** Wipe the entire canvas clean with a dedicated reset action to start a fresh masterpiece.
+* **Drawing Tools:**
+* **Brush:** Freehand painting with real-time stroke tracking.
+* **Line:** Click-and-drag straight lines.
+* **Rectangle & Oval:** Draw geometric shapes with optional solid fills or outlines.
+* **Eraser:** Easily clean up mistakes by erasing strokes.
+
+
+* **Customization Controls:**
+* Adjustable **Line Stroke / Thickness** slider (ranging from 0 to 80).
+* Interactive **Color Chooser** for both line/stroke colors and fill colors.
+* **Fill / No Fill** toggle button for shapes.
+
+
+* **Canvas Management:**
+* **Clear:** Instantly wipe the entire canvas clean.
+* **Save/Export:** Export your artwork directly as a PNG file via a file chooser dialog.
+* **Quit:** Exit the application cleanly.
+
+
 
 ---
 
 ## Project Structure
 
-The codebase is modularized into three main components:
-*   `Main.java`: Initializes the main application window (`JFrame`) and coordinates the layout.
-*   `SidePanel.java`: Contains the toolbar interface, buttons, sliders, and event listeners.
-*   `PaintPanel.java`: Handles the custom `BufferedImage` canvas drawing logic and mouse motion tracking via `Graphics2D`.
+The project is broken down into three core Java classes located in the `src` package:
+
+1. **`Main.java`**: Initializes the main application window (`JFrame`), sets up the primary layout, and binds the components together.
+2. **`PaintPanel.java`**: The core drawing canvas. Handles mouse motion events, shape rendering, buffering, and image export functionality.
+3. **`SidePanel.java`**: The control panel containing all the buttons, sliders, and color choosers for interacting with the canvas.
 
 ---
 
-## How to Run
+## Getting Started
 
 ### Prerequisites
-Make sure you have the Java Development Kit (JDK 8 or higher) installed on your system.
 
-### Option 1: Using the Terminal
-1. Clone the repository or download the source files:
-   ```bash
-   git clone [https://github.com/noahh6/Paint.git](https://github.com/noahh6/Paint.git)
-   cd Paint/src
+* **Java Development Kit (JDK)** installed on your system (JDK 8 or higher recommended).
+
+### Running the Application
+
+1. Clone or download this repository.
+2. Navigate to the `src` directory or open the project in your favorite Java IDE (such as IntelliJ IDEA, Eclipse, or NetBeans).
+3. Compile the Java files:
+```bash
+javac Main.java PaintPanel.java SidePanel.java
+
+```
+
+
+4. Run the application:
+```bash
+java Main
+
+```
