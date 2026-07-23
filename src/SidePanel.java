@@ -9,20 +9,27 @@ public class SidePanel extends JPanel {
     public SidePanel(PaintPanel paintPanel) {
         setBackground(Color.gray);
         this.paintPanel = paintPanel;
-        setPreferredSize(new Dimension(300, 900));
-        setLayout(new GridLayout(0, 1, 0, 20));
+        setPreferredSize(new Dimension(250, 900));
+        setLayout(new GridLayout(0, 1, 0, 10));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         setUpGUI();
     }
 
     private void setUpGUI() {
+
+        JButton brushTool = new JButton("Brush");
+        brushTool.addActionListener(e -> {
+            paintPanel.setTool("brush");
+        });
+        add(brushTool);
+
         JButton lineTool = new JButton("Line");
         lineTool.addActionListener(e -> {
-            PaintPanel.tool = "line";
+            paintPanel.setTool("line");
         });
         add(lineTool);
 
-        JSlider lineStroke = new JSlider(JSlider.HORIZONTAL, 0, 100, 5);
+        JSlider lineStroke = new JSlider(JSlider.HORIZONTAL, 0, 80, 20);
         lineStroke.setToolTipText("Line Stroke");
         lineStroke.setMajorTickSpacing(25);
         lineStroke.setMinorTickSpacing(5);
@@ -35,7 +42,7 @@ public class SidePanel extends JPanel {
             @Override
             public void stateChanged(ChangeEvent e) {
                 // Update the text label dynamically as the slider moves
-                PaintPanel.lineStroke = lineStroke.getValue();
+                paintPanel.setLineStroke(lineStroke.getValue());
                 repaint();
             }
         });
@@ -45,49 +52,57 @@ public class SidePanel extends JPanel {
         JButton lineColor = new JButton("Line Colour");
         lineColor.setBackground(Color.BLACK);
         lineColor.addActionListener(e -> {
-            PaintPanel.lineColor = JColorChooser.showDialog(null, "Choose Line Colour", Color.BLACK);
-            lineColor.setBackground(PaintPanel.lineColor);
+            paintPanel.setLineColor(JColorChooser.showDialog(null, "Choose Line Colour", Color.BLACK));
+            lineColor.setBackground(paintPanel.lineColor);
             repaint();
         });
         add(lineColor);
 
         JButton rectTool = new JButton("Rectangle");
         rectTool.addActionListener(e -> {
-            PaintPanel.tool = "rect";
+            paintPanel.setTool("rect");
         });
         add(rectTool);
 
         JButton ovalTool = new JButton("Oval");
         ovalTool.addActionListener(e -> {
-            PaintPanel.tool = "oval";
+            paintPanel.setTool("oval");
         });
         add(ovalTool);
 
         JButton fillButton = new JButton("No Fill");
         fillButton.addActionListener(e -> {
             paintPanel.toggleFill();
-            if(PaintPanel.fill) {
-                fillButton.setText("Fill");
-            }
-            else {
-                fillButton.setText("No Fill");
-            }
+            if (paintPanel.fill) fillButton.setText("Fill");
+            else fillButton.setText("No Fill");
         });
         add(fillButton);
 
         JButton fillColor = new JButton("Fill Colour");
         fillColor.setBackground(Color.BLACK);
         fillColor.addActionListener(e -> {
-            PaintPanel.fillColor = JColorChooser.showDialog(null, "Choose Fill Colour", Color.BLACK);
-            fillColor.setBackground(PaintPanel.fillColor);
+            paintPanel.setFillColor(JColorChooser.showDialog(null, "Choose Fill Colour", Color.BLACK));
+            fillColor.setBackground(paintPanel.fillColor);
         });
         add(fillColor);
+
+        JButton eraser = new JButton("Eraser");
+        eraser.addActionListener(e -> {
+            paintPanel.setTool("eraser");
+        });
+        add(eraser);
 
         JButton clearButton = new JButton("Clear");
         clearButton.addActionListener(e -> {
             paintPanel.clearCanvas();
         });
         add(clearButton);
+
+        JButton saveButton = new JButton("Save/Export");
+        saveButton.addActionListener(e -> {
+            paintPanel.saveCanvas();
+        });
+        add(saveButton);
 
         JButton quitButton = new JButton("Quit");
         quitButton.addActionListener(e -> {
@@ -103,15 +118,12 @@ public class SidePanel extends JPanel {
 
         Graphics2D g2 = (Graphics2D) g.create(); // Create a copy
         try {
-            g2.setStroke(new BasicStroke(PaintPanel.lineStroke));
+            g2.setStroke(new BasicStroke(paintPanel.lineStroke));
 
-            int y = getHeight() - 773;
+            int y = getHeight() - 737;
 
-
-            g2.setColor(Color.WHITE);
-            g2.drawRect(224, y, 4, 4);
-            g2.setColor(PaintPanel.lineColor);
-            g2.drawLine(226, y + 2, 226, y + 2);
+            g2.setColor(paintPanel.lineColor);
+            g2.drawLine(190, y + 2, 190, y + 2);
         } finally {
             g2.dispose(); // Restore original graphics state
         }

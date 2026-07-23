@@ -16,9 +16,9 @@ public class Main {
             JLabel topText = new JLabel("Java Paint");
             topText.setFont(new Font("Arial", Font.BOLD, 20));
             top.add(topText);
+            frame.add(top, BorderLayout.NORTH);
             frame.add(s, BorderLayout.LINE_START); // Left side
             frame.add(p, BorderLayout.CENTER);
-            frame.add(top, BorderLayout.NORTH);
 
             frame.setPreferredSize(new Dimension(1500, 1000));
             frame.pack();

@@ -1,31 +1,27 @@
+import javax.imageio.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
+import java.io.*;
+import java.util.*;
 
 public class PaintPanel extends JPanel {
 
-    public static String tool;
-    public static int lineStroke;
-    public static Color lineColor;
-    public static Color fillColor;
-    public static boolean fill;
+    public String tool;
+    public int lineStroke;
+    public Color lineColor, fillColor;
+    public boolean fill;
 
     private final BufferedImage canvas;
-    private BufferedImage oldCanvas;
     private final Graphics2D g2;
 
-    private int x1;
-    private int y1;
-    private int x2;
-    private int y2;
-    private int cX;
-    private int cY;
+    private int x1, y1, x2, y2, cX, cY, lastX, lastY;
     private boolean mouseHeld;
 
 
     public PaintPanel() {
-        setPreferredSize(new Dimension(1200, 900));
+        setPreferredSize(new Dimension(1250, 900));
 
         canvas = new BufferedImage(1200, 900, BufferedImage.TYPE_INT_RGB);
         g2 = canvas.createGraphics();
@@ -38,13 +34,26 @@ public class PaintPanel extends JPanel {
             public void mousePressed(MouseEvent e) {
                 x1 = e.getX();
                 y1 = e.getY();
+                cX = x1;
+                cY = y1;
+                lastX = x1;
+                lastY = y1;
+
+                brush(lastX, lastY);
                 mouseHeld = true;
+                repaint();
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
                 cX = e.getX();
                 cY = e.getY();
+
+                brush(lastX, lastY, cX, cY);
+
+                lastX = cX;
+                lastY = cY;
+
                 repaint();
             }
 
@@ -73,13 +82,42 @@ public class PaintPanel extends JPanel {
         addMouseListener(mouseHandler);
         addMouseMotionListener(mouseHandler);
 
-        tool = "line";
+        tool = "brush";
         lineColor = Color.BLACK;
         fillColor = Color.BLACK;
-        lineStroke = 5;
+        lineStroke = 20;
+    }
+
+    private void brush(int x, int y) {
+
+        if (tool.equals("brush")) {
+            g2.setStroke(new BasicStroke(lineStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2.setColor(lineColor);
+            g2.fillOval(x - lineStroke / 2, y - lineStroke / 2, lineStroke, lineStroke);
+        }
+        else if (tool.equals("eraser")) {
+            g2.setStroke(new BasicStroke(lineStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2.setColor(Color.WHITE);
+            g2.fillOval(x - lineStroke / 2, y - lineStroke / 2, lineStroke, lineStroke);
+        }
+    }
+
+    private void brush(int x1, int y1, int x2, int y2) {
+
+        if (tool.equals("brush")) {
+            g2.setStroke(new BasicStroke(lineStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2.setColor(lineColor);
+            g2.drawLine(x1, y1, x2, y2);
+        }
+        else if (tool.equals("eraser")) {
+            g2.setStroke(new BasicStroke(lineStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2.setColor(Color.WHITE);
+            g2.drawLine(x1, y1, x2, y2);
+        }
     }
 
     private void drawALine(int x1, int y1, int x2, int y2) {
+
         g2.setColor(lineColor);
         g2.setStroke(new BasicStroke(lineStroke));
         g2.drawLine(x1, y1, x2, y2);
@@ -156,6 +194,10 @@ public class PaintPanel extends JPanel {
 
 
             switch (tool) {
+                case "line":
+                    g2d.setColor(lineColor);
+                    g2d.drawLine(x1, y1, cX, cY);
+                    break;
                 case "rect":
                     if (fill) {
                         g2d.setColor(fillColor);
@@ -176,13 +218,49 @@ public class PaintPanel extends JPanel {
                         g2d.drawOval(x, y, width, height);
                     }
                     break;
-                case "line":
-                    g2d.setColor(lineColor);
-                    g2d.drawLine(x1, y1, cX, cY);
-                    break;
             }
         }
     }
 
+    public void saveCanvas() {
+        JFileChooser chooser = new JFileChooser();
+
+        if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+
+            if (!file.getName().toLowerCase().endsWith(".png")) {
+                file = new File(file.getAbsolutePath() + ".png");
+            }
+            
+            try {
+                ImageIO.write(canvas, "png", file);
+            }
+            catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Could not save file.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+    }
+
+    // Setters
+    public void setTool(String tool) {
+        this.tool = tool;
+    }
+
+    public void setLineStroke(int lineStroke) {
+        this.lineStroke = lineStroke;
+    }
+
+    public void setLineColor(Color lineColor) {
+        this.lineColor = lineColor;
+    }
+
+    public void setFillColor(Color fillColor) {
+        this.fillColor = fillColor;
+    }
+
+    public void setFill(boolean fill) {
+        this.fill = fill;
+    }
 
 }
